@@ -1,15 +1,15 @@
 # Big-Data-Capstone-Project-AI-Image-Remastering-
-AI Image Remastering
+# AI Image Remastering
 
-Project Summary:
+# Project Summary:
 
 The AI Image Remastering project aims to develop an image enhancement pipeline using deep learning techniques to transform low-resolution images into high-resolution ones with improved visual quality. In today's digital era, the demand for high-quality images is increasing across various domains such as medical imaging, satellite imaging, and photography. However, obtaining high-resolution images can be challenging due to hardware limitations or environmental conditions.
 
-Objective:
+# Objective:
 
 The primary objective of this project is to leverage state-of-the-art deep learning models to enhance the resolution of low-quality images. By utilizing pre-trained models like SRGAN, ESRGAN, Real-ESRGAN, and GFPGAN, we aim to achieve significant improvements in image quality, making low-resolution images visually comparable to high-resolution ones.
 
-Key Features:
+# Key Features:
 
 Dataset Preparation: Acquiring and preprocessing a comprehensive dataset of high-resolution images.
 Model Development: Developing and training deep learning models to enhance image resolution.
@@ -58,7 +58,7 @@ License:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-Acknowledgments:
+# Acknowledgments:
 
 Kaggle Dataset: Low Resolution Images to High Resolution
 SRGAN Paper: Ledig et al., Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network
