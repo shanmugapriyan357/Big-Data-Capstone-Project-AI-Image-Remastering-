@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real ESRGAN Image Enhancement</title>
+    <style>
+        body {
+            background-color: #222;  /* Dark background */
+            color: #fff;  /* Light text */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;  /* Adjusted width */
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+        }
+        .upload-btn {
+            background-color: #007bff;  /* Blue color for upload button */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .upload-btn:hover {
+            background-color: #0056b3;  /* Darker blue on hover */
+        }
+        .enhance-btn {
+            background-color: #28a745;  /* Green color for enhance button */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .enhance-btn:hover {
+            background-color: #218838;  /* Darker green on hover */
+        }
+        .result {
+            margin-top: 20px;
+            display: none;  /* Initially hidden */
+        }
+        img-comparison-slider {
+            width: 100%;  /* Make the slider take the full width of the container */
+            max-width: 800px;  /* Set a maximum width */
+            height: auto;  /* Maintain aspect ratio */
+        }
+        img-comparison-slider img {
+            width: 100%;  /* Make the images take the full width of the slider */
+            height: auto;  /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real ESRGAN Image Enhancement</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png" required style="color: #007bff;"> <!-- Blue color for file input text -->
+            <br><br>
+            <label for="scale">Select Upscaling Factor:</label>
+            <select name="scale" id="scale">
+                <option value="2">2x</option>
+                <option value="4">4x</option>
+                <option value="8">8x</option>
+            </select>
+            <br><br>
+            <button type="submit" id="enhanceBtn" class="enhance-btn">Enhance Image</button>
+            <p id="processingMsg" style="display: none;">Processing...</p>
+        </form>
+
+        <div class="result" id="result">
+            <img-comparison-slider>
+                <img id="enhanced-image" slot="first" src="" alt="Enhanced Image" />
+                <img id="original-image" slot="second" src="" alt="Original Image" />
+            </img-comparison-slider>
+            <br><br>
+            <a id="download-link" href="" download class="enhance-btn" style="display: none;">Download Enhanced Image</a>
+        </div>
+    </div>
+
+    <script defer src="https://unpkg.com/img-comparison-slider@7/dist/index.js"></script>
+    <script>
+        const form = document.getElementById('uploadForm');
+        const enhanceBtn = document.getElementById('enhanceBtn');
+        const processingMsg = document.getElementById('processingMsg');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const scaleSelect = document.getElementById('scale');
+            const file = fileInput.files[0];
+            const scale = scaleSelect.value;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('scale', scale);
+
+            processingMsg.style.display = 'block';  // Show processing message
+
+            const response = await fetch('/upscale', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            const resultDiv = document.getElementById('result');
+            const originalImage = document.getElementById('original-image');
+            const enhancedImage = document.getElementById('enhanced-image');
+            const downloadLink = document.getElementById('download-link');
+
+            originalImage.src = data.resized_original_path;
+            enhancedImage.src = data.output_path;
+            downloadLink.href = data.output_path;
+            resultDiv.style.display = 'block';
+
+            processingMsg.style.display = 'none';  // Hide processing message
+
+            // Show download link
+            downloadLink.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real ESRGAN Image Enhancement</title>
+    <style>
+        body {
+            background-color: #222;  /* Dark background */
+            color: #fff;  /* Light text */
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+        }
+        .upload-btn {
+            background-color: #007bff;  /* Blue color for upload button */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .upload-btn:hover {
+            background-color: #0056b3;  /* Darker blue on hover */
+        }
+        .enhance-btn {
+            background-color: #28a745;  /* Green color for enhance button */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .enhance-btn:hover {
+            background-color: #218838;  /* Darker green on hover */
+        }
+        .result {
+            margin-top: 20px;
+            display: none;  /* Initially hidden */
+        }
+        .image-container {
+            margin-top: 20px;
+            position: relative;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .image-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            cursor: ew-resize;  /* Cursor style for slider */
+        }
+        .slider {
+            position: relative;
+            width: 50%;
+            margin: auto;
+        }
+        .slider:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            background-color: #fff;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+        .slider-bar {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            z-index: 2;
+        }
+        .handle {
+            position: absolute;
+            top: 50%;
+            left: calc(50% - 10px);
+            width: 20px;
+            height: 20px;
+            background-color: #28a745;  /* Green color for handle */
+            border: 2px solid #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            cursor: ew-resize;  /* Cursor style for handle */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real ESRGAN Image Enhancement</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png" required style="color: #007bff;"> <!-- Blue color for file input text -->
+            <br><br>
+            <label for="scale">Select Upscaling Factor:</label>
+            <select name="scale" id="scale">
+                <option value="2">2x</option>
+                <option value="4">4x</option>
+                <option value="8">8x</option>
+            </select>
+            <br><br>
+            <button type="submit" id="enhanceBtn" class="enhance-btn">Enhance Image</button>
+            <p id="processingMsg" style="display: none;">Processing...</p>
+        </form>
+
+        <div class="result" id="result">
+            <div class="image-container">
+                <div class="original">
+                    <h3>Original Image</h3>
+                    <img id="original-image" src="" alt="Original Image">
+                    <p id="original-info" class="image-info"></p>
+                </div>
+                <div class="enhanced">
+                    <h3>Enhanced Image</h3>
+                    <img id="enhanced-image" src="" alt="Enhanced Image">
+                    <p id="enhanced-info" class="image-info"></p>
+                </div>
+                <div class="image-slider">
+                    <div class="slider" id="image-slider">
+                        <div class="slider-bar"></div>
+                        <div class="handle"></div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
+            <a id="download-link" href="" download class="enhance-btn" style="display: none;">Download Enhanced Image</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const enhanceBtn = document.getElementById('enhanceBtn');
+        const processingMsg = document.getElementById('processingMsg');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const scaleSelect = document.getElementById('scale');
+            const file = fileInput.files[0];
+            const scale = scaleSelect.value;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('scale', scale);
+
+            processingMsg.style.display = 'block';  // Show processing message
+
+            const response = await fetch('/upscale', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            const resultDiv = document.getElementById('result');
+            const originalImage = document.getElementById('original-image');
+            const enhancedImage = document.getElementById('enhanced-image');
+            const originalInfo = document.getElementById('original-info');
+            const enhancedInfo = document.getElementById('enhanced-info');
+            const downloadLink = document.getElementById('download-link');
+
+            originalImage.src = data.original_path;
+            enhancedImage.src = data.output_path;
+            downloadLink.href = data.output_path;
+            resultDiv.style.display = 'block';
+
+            originalInfo.textContent = `Resolution: ${data.original_width}x${data.original_height}`;
+            enhancedInfo.textContent = `Resolution: ${data.output_width}x${data.output_height}`;
+
+            processingMsg.style.display = 'none';  // Hide processing message
+
+            // Show download link
+            downloadLink.style.display = 'block';
+
+            // Initialize image slider
+            const slider = document.getElementById('image-slider');
+            const handle = slider.querySelector('.handle');
+            const beforeImage = document.querySelector('.original img');
+            const afterImage = document.querySelector('.enhanced img');
+
+            let isDown = false;
+
+            handle.addEventListener('mousedown', () => {
+                isDown = true;
+            });
+
+            handle.addEventListener('mouseup', () => {
+                isDown = false;
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                
+                let x = e.pageX - slider.offsetLeft;
+                let percent = (x / slider.offsetWidth) * 100;
+
+                handle.style.left = percent + '%';
+                beforeImage.style.width = percent + '%';
+                afterImage.style.width = (100 - percent) + '%';
+            });
+        });
+    </script>
+</body>
+</html>
