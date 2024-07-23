@@ -1,10 +1,9 @@
-# Big-Data-Capstone-Project-AI-Image-Remastering-
+# # Big-Data-Capstone-Project-AI-Image-Remastering-
 AI Image Remastering
 
+# AI Image Remastering - Big Data Capstone Project
 
-# Image Restoration with Real-ESRGAN
-
-This project utilizes the Real-ESRGAN model for image restoration. It includes a web interface developed using Flask, allowing users to upload low-resolution images, enhance them using the model, and download the restored images.
+This project leverages the Real-ESRGAN model for image restoration. It features a web interface built using Flask, allowing users to upload low-resolution images, enhance them using the model, and download the restored images.
 
 ## Table of Contents
 
@@ -33,8 +32,8 @@ Follow these steps to set up the project locally:
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/image-restoration.git
-    cd image-restoration
+    git clone https://github.com/shanmugapriyan357/Big-Data-Capstone-Project-AI-Image-Remastering-.git
+    cd Big-Data-Capstone-Project-AI-Image-Remastering-
     ```
 
 2. **Create a virtual environment:**
