@@ -6,3 +6,4 @@ facexlib
 flask
 gradio
 RealESRGAN
+ujson==5.7.0
