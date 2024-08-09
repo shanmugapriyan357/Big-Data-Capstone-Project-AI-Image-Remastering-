@@ -3,4 +3,5 @@ torch==2.4.0
 matplotlib
 facexlib
 streamlit
+huggingface_hub
 opencv-python-headless
