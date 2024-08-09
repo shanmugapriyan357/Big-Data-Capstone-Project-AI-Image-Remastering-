@@ -4,4 +4,4 @@ matplotlib
 facexlib
 streamlit
 huggingface_hub
-opencv-python-headless
+opencv-python
