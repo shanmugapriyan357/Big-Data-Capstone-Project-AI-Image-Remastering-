@@ -1,8 +1,14 @@
+
 Pillow
-torch
+torch==2.0.0
+torchvision==0.15.0
 huggingface-hub
 matplotlib
 facexlib
 flask
 gradio
 RealESRGAN
+streamlit
+ujson==5.7.0
+
+
