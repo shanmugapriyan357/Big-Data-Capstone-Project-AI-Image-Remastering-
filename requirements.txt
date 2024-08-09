@@ -1,6 +1,5 @@
-
-Pillow
-torch==2.0.0
+Pillow==10.4.0
+torch==2.4.0
 torchvision==0.15.0
 huggingface-hub
 matplotlib
