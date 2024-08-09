@@ -1,5 +1,5 @@
-Pillow==10.4.0
-torch==2.4.0
+Pillow
+torch
 matplotlib
 facexlib
 gradio
