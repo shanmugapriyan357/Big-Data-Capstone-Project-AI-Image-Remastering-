@@ -1,395 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real ESRGAN Image Enhancement</title>
-  <style>
-    body {
-      background-color: #222; /* Dark background */
-      color: #fff; /* Light text */
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      margin: 0;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 90%;
-      max-width: 1200px;
-      margin-top: 80px; /* Add margin to account for fixed header */
-    }
-    .left-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-    .upload-btn, .enhance-btn, .toggle-btn, .scale-btn {
-      background: linear-gradient(to right, #007bff, #0056b3); /* Blue gradient */
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      border-radius: 20px; /* Rounded edges */
-      transition: background 0.3s ease;
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 1.1em; /* Increased button text size */
-      justify-content: center;
-      max-width: 300px; /* Limit width for better display */
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .upload-btn img, .enhance-btn img, .toggle-btn img, .scale-btn img {
-      margin-right: 10px;
-      width: 20px; /* Adjust the icon size */
-      height: 20px;
-    }
-    .upload-btn:hover, .toggle-btn:hover, .scale-btn:hover {
-      background: linear-gradient(to right, #0056b3, #00418a); /* Darker shade on hover */
-    }
-    .enhance-btn {
-      background: linear-gradient(to right, #28a745, #218838); /* Light and dark shade for enhance button */
-    }
-    .enhance-btn:hover {
-      background: linear-gradient(to right, #218838, #1e7e34); /* Darker shade on enhance button hover */
-    }
-    .toggle-btn.active, .scale-btn.active {
-      background: linear-gradient(to right, #28a745, #218838); /* Green gradient when active */
-    }
-    .processing-container {
-      position: relative;
-      width: 100%;
-      text-align: center;
-      margin-top: 20px;
-    }
-    .processing {
-      color: #fff;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .loading-icon {
-      margin-top: 10px; /* Spacing below processing text */
-    }
-    .result {
-      display: none; /* Initially hidden */
-      text-align: center;
-      width: 100%;
-      margin-top: 20px; /* Add space between buttons and result */
-    }
-    .comparison-container {
-      position: relative;
-      width: 100%;
-      max-width: 800px; /* Limit width for better display */
-      margin: 0 auto; /* Center align */
-    }
-    img {
-      width: 100%; /* Ensure images fit within their containers */
-      height: auto;
-      border-radius: 10px; /* Rounded edges */
-    }
-    img-comparison-slider {
-      width: 100%;
-      height: auto;
-    }
-    .upscaling-options {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      border: 1px solid #555;
-      padding: 15px;
-      border-radius: 10px;
-      width: 85%; /* Adjust width for better alignment */
-      max-width: 400px; /* Limit the maximum width */
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .upscaling-options label {
-      font-size: 1.1em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .scale-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px; /* Add spacing between buttons */
-    }
-    .scale-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .invert-colors {
-      filter: invert(1);
-    }
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: #222;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 1000;
-    }
-    header h1 {
-      margin: 0;
-    }
-    .hamburger {
-      position: relative;
-      cursor: pointer;
-      width: 70px;
-    }
-    .hamburger img {
-      width: 30px;
-      height: 30px;
-    }
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 40px;
-      right: 0;
-      background-color: #333;
-      border-radius: 5px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-      z-index: 1000;
-      width: 200px;
-    }
-    .dropdown-menu a {
-      display: block;
-      padding: 10px 20px;
-      color: #fff;
-      text-decoration: none;
-      transition: background 0.3s ease;
-      white-space: nowrap; /* Ensure single line per item */
-    }
-    .dropdown-menu a:hover {
-      background-color: #444;
-    }
-    .hamburger:hover .dropdown-menu {
-      display: block;
-    }
-  </style>
-</head>
-<body>
-<header>
-  <h1>Generative AI Image Restoration</h1>
-  <div class="hamburger">
-    <img class="invert-colors" src="static/icons/hamburger icon.png" alt="Hamburger Icon">
-    <div class="dropdown-menu">
-      <a href="#contact">Contact Developer</a>
-      <a href="#privacy">Privacy Policy</a>
-      <a href="#help">Help</a>
-    </div>
-  </div>
-</header>
-<div class="container">
-  <div class="left-panel">
-    <h1 style="color: #5cb85c;">AI Image Restoration</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <label for="fileInput" class="upload-btn">
-        <img class="invert-colors" src="static/icons/upload icon.png" alt="Upload Icon">
-        <span id="fileLabel">Upload Image</span>
-      </label>
-      <input type="file" name="file" id="fileInput" accept=".jpg,.jpeg,.png" required style="display: none;">
-      <button type="button" id="animeBtn" class="toggle-btn">
-        <img src="static/icons/anime.png" alt="Anime Icon">
-        Anime Image OFF
-      </button>
-      <div class="upscaling-options">
-        <label>
-          <img class="invert-colors" src="static/icons/upscale icon.png" alt="Upscaling Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;">
-          Upscaling Factor:
-        </label>
-        <div class="scale-buttons">
-          <button type="button" class="scale-btn" data-scale="2">2x</button>
-          <button type="button" class="scale-btn" data-scale="4">4x</button>
-          <button type="button" class="scale-btn" data-scale="8">8x</button>
+import streamlit as st
+from PIL import Image
+import torch
+from RealESRGAN import RealESRGAN
+from io import BytesIO
+import base64
+import streamlit.components.v1 as components
+
+# Function to load the model based on scale and anime toggle
+def load_model(scale, anime=False):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = RealESRGAN(device, scale=scale, anime=anime)
+    model_path = {
+        (2, False): 'model/RealESRGAN_x2.pth',
+        (4, False): 'model/RealESRGAN_x4plus.pth',
+        (8, False): 'model/RealESRGAN_x8.pth',
+        (4, True): 'model/RealESRGAN_x4plus_anime_6B.pth'
+    }[(scale, anime)]
+    model.load_weights(model_path)
+    return model
+
+def enhance_image(image, scale, anime):
+    model = load_model(scale, anime=anime)
+    sr_image = model.predict(image)
+    
+    buffer = BytesIO()
+    sr_image.save(buffer, format="PNG")
+    buffer.seek(0)
+    return sr_image, buffer
+
+def get_base64_image(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+def image_comparison_slider(original_base64, enhanced_base64):
+    slider_html = f"""
+    <style>
+    .img-comp-container {{
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        margin: auto;
+    }}
+    .img-comp-img {{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }}
+    .img-comp-img img {{
+        width: 100%;
+        height: auto;
+        display: block;
+    }}
+    .img-comp-overlay {{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%; /* Start at 50% for better default view */
+        height: 100%;
+        overflow: hidden;
+        background-color: rgba(0,0,0,0.5);
+        transition: 0.4s;
+    }}
+    .img-comp-slider {{
+        position: absolute;
+        cursor: ew-resize;
+        width: 40px;
+        height: 40px;
+        background-color: #2196F3;
+        border-radius: 50%;
+        transform: translateY(-50%);
+        top: 50%;
+        left: 50%;
+        margin-left: -20px;
+        margin-top: -20px;
+        z-index: 9;
+        opacity: 0.7;
+        transition: 0.3s;
+    }}
+    .img-comp-slider:hover {{
+        opacity: 1;
+    }}
+    </style>
+    <div class="img-comp-container">
+        <div class="img-comp-img">
+            <img src="data:image/png;base64,{original_base64}" />
         </div>
-      </div>
-      <button type="button" id="enhanceBtn" class="enhance-btn">
-        <img class="invert-colors" src="static/icons/enhance icon.png" alt="Enhance Icon">
-        Restore Image
-      </button>
-      <div class="processing-container">
-        <p id="processingMsg" class="processing" style="display: none;">
-          Processing
-          <br>
-          <img class="loading-icon" src="static/icons/loading.gif" alt="Loading" style="width: 30px; height: 30px; margin-right: 10px;">
-        </p>
-      </div>
-    </form>
-  </div>
-
-  <div class="right-panel">
-    <div class="result" id="result">
-      <div class="comparison-container">
-        <img-comparison-slider>
-          <img id="enhanced-image" slot="first" src="" alt="Enhanced Image">
-          <img id="original-image" slot="second" src="" alt="Original Image">
-        </img-comparison-slider>
-      </div>
-      <a id="download-link" href="" class="enhance-btn" download style="display: none;">
-        <img class="invert-colors" src="static/icons/download icon.png" alt="Download Icon">
-        Download Enhanced Image
-      </a>
+        <div class="img-comp-img">
+            <img src="data:image/png;base64,{enhanced_base64}" />
+        </div>
+        <div class="img-comp-overlay"></div>
+        <div class="img-comp-slider"></div>
     </div>
-  </div>
-</div>
+    <script>
+    function initComparisons() {{
+        var x, i;
+        x = document.getElementsByClassName("img-comp-container");
+        for (i = 0; i < x.length; i++) {{
+            compareImages(x[i]);
+        }}
+        function compareImages(img) {{
+            var slider, overlay, clicked = 0, w, h;
+            w = img.offsetWidth;
+            h = img.offsetHeight;
+            slider = img.getElementsByClassName("img-comp-slider")[0];
+            overlay = img.getElementsByClassName("img-comp-overlay")[0];
+            img.addEventListener("mousemove", slide);
+            img.addEventListener("touchmove", slide);
+            img.addEventListener("mousedown", setActive);
+            window.addEventListener("mouseup", removeActive);
+            function slide(e) {{
+                if (clicked === 0) return false;
+                e.preventDefault();
+                var pos = getCursorPos(e);
+                if (pos.x > w) pos.x = w;
+                if (pos.x < 0) pos.x = 0;
+                slider.style.left = pos.x + "px";
+                overlay.style.width = pos.x + "px";
+            }}
+            function getCursorPos(e) {{
+                var a, x = 0;
+                e = (e.changedTouches) ? e.changedTouches[0] : e;
+                a = img.getBoundingClientRect();
+                x = e.pageX - a.left;
+                x = x - window.pageXOffset;
+                return {{ x: x }};
+            }}
+            function setActive(e) {{
+                clicked = 1;
+                e.preventDefault();
+            }}
+            function removeActive() {{
+                clicked = 0;
+            }}
+        }}
+    }}
+    initComparisons();
+    </script>
+    """
+    components.html(slider_html, height=600, scrolling=True)
 
-<script defer src="https://unpkg.com/img-comparison-slider@7/dist/index.js"></script>
-<script>
-  const form = document.getElementById('uploadForm');
-  const fileInput = document.getElementById('fileInput');
-  const fileLabel = document.getElementById('fileLabel');
-  const enhanceBtn = document.getElementById('enhanceBtn');
-  const processingMsg = document.getElementById('processingMsg');
-  const animeBtn = document.getElementById('animeBtn');
-  const scaleBtns = document.querySelectorAll('.scale-btn');
-  let selectedScale = 2; // Default scaling factor
 
-  fileInput.addEventListener('change', (e) => {
-    const fileName = e.target.files[0].name;
-    fileLabel.innerHTML = `Upload Image<br>${fileName}`;
-    resetResult(); // Reset result display when a new image is uploaded
 
-    // Reset scaling option to default (2x) on new file upload
-    scaleBtns.forEach(btn => {
-      btn.classList.remove('active');
-      if (btn.getAttribute('data-scale') === '2') {
-        btn.classList.add('active');
-        selectedScale = 2;
-      }
-    });
-  });
+def main():
+    st.title("Generative AI Image Restoration")
 
-  animeBtn.addEventListener('click', () => {
-    animeBtn.classList.toggle('active');
-    animeBtn.innerHTML = animeBtn.classList.contains('active') ?
-      `<img src="static/icons/anime.png" alt="Anime Icon"> Anime Image ON` :
-      `<img src="static/icons/anime.png" alt="Anime Icon"> Anime Image OFF`;
+    # Image upload
+    uploaded_image = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+    
+    if uploaded_image is not None:
+        image = Image.open(uploaded_image)
+        st.image(image, caption="Original Image", use_column_width=True)
+        
+        # Anime toggle
+        anime = st.checkbox("Anime Image", value=False)
+        
+        # Conditional scale options
+        if anime:
+            scale = "4x"  # Set to 4x automatically when anime is selected
+        else:
+            scale = st.radio("Upscaling Factor", ["2x", "4x", "8x"], index=0)
+        
+        scale_value = int(scale.replace('x', ''))
+        
+        # Enhance button
+        if st.button("Restore Image"):
+            enhanced_image, buffer = enhance_image(image, scale_value, anime)
+            
+            # Convert images to base64 for comparison slider
+            original_base64 = get_base64_image(image)
+            enhanced_base64 = get_base64_image(enhanced_image)
+            
+            # Show comparison slider
+            image_comparison_slider(original_base64, enhanced_base64)
+            
+            # Download button
+            st.download_button(
+                label="Download Enhanced Image",
+                data=buffer,
+                file_name="enhanced_image.png",
+                mime="image/png"
+            )
 
-    // Update scaling options based on Anime button state
-    scaleBtns.forEach(btn => {
-      if (animeBtn.classList.contains('active') && btn.getAttribute('data-scale') !== '4') {
-        btn.disabled = true;
-      } else {
-        btn.disabled = false;
-      }
-    });
-
-    // Automatically select 4x scaling if Anime button is turned on
-    if (animeBtn.classList.contains('active')) {
-      scaleBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-scale') === '4') {
-          btn.classList.add('active');
-          selectedScale = 4;
-        }
-      });
-    } else {
-      // If Anime button is turned off, revert to default (2x) scaling
-      scaleBtns.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.getAttribute('data-scale') === '2') {
-          btn.classList.add('active');
-          selectedScale = 2;
-        }
-      });
-    }
-  });
-
-  scaleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (animeBtn.classList.contains('active') && btn.getAttribute('data-scale') !== '4') {
-        return; // Ignore clicks on disabled buttons
-      }
-
-      scaleBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedScale = parseInt(btn.getAttribute('data-scale'));
-    });
-  });
-
-  enhanceBtn.addEventListener('click', () => {
-    if (!fileInput.files.length) {
-      alert('Please upload an image first.');
-      return;
-    }
-
-    processingMsg.style.display = 'block';
-
-    const formData = new FormData(form);
-    formData.append('scale', selectedScale.toString());
-
-    fetch('/upscale', {
-      method: 'POST',
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      processingMsg.style.display = 'none';
-
-      const originalImg = document.getElementById('original-image');
-      const enhancedImg = document.getElementById('enhanced-image');
-
-      originalImg.src = data.original_path;
-      enhancedImg.src = data.output_path;
-
-      document.getElementById('result').style.display = 'block';
-      document.getElementById('download-link').style.display = 'block';
-      document.getElementById('download-link').href = data.output_path;
-      
-      // Scroll to the processed image
-      scrollToProcessedImage();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('An error occurred while processing the image.');
-      processingMsg.style.display = 'none';
-    });
-  });
-
-  function scrollToProcessedImage() {
-    const resultSection = document.getElementById('result');
-    const enhancedImg = document.getElementById('enhanced-image');
-
-    // Ensure the enhanced image is loaded before scrolling
-    enhancedImg.onload = function() {
-      resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    };
-  }
-
-  function resetResult() {
-    const originalImg = document.getElementById('original-image');
-    const enhancedImg = document.getElementById('enhanced-image');
-    const downloadLink = document.getElementById('download-link');
-
-    originalImg.src = '';
-    enhancedImg.src = '';
-    downloadLink.href = '';
-    document.getElementById('result').style.display = 'none';
-    downloadLink.style.display = 'none';
-  }
-</script>
-
-</body>
-</html>
+if __name__ == "__main__":
+    main()
