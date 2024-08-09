@@ -4,6 +4,9 @@ import torch
 from RealESRGAN import RealESRGAN
 from io import BytesIO
 
+# Define the target size for the image
+TARGET_SIZE = (240, 240)
+
 # Function to load the model based on scale and anime toggle
 def load_model(scale, anime=False):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,6 +22,14 @@ def load_model(scale, anime=False):
 
 def enhance_image(image, scale, anime):
     model = load_model(scale, anime=anime)
+    
+    # Convert image to RGB if it has an alpha channel
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+    
+    # Resize image to target dimensions
+    image = image.resize(TARGET_SIZE)
+    
     sr_image = model.predict(image)
     
     buffer = BytesIO()
