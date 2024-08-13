@@ -9,8 +9,6 @@ This project leverages the Real-ESRGAN model for image restoration. It features 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Model Evaluation](#model-evaluation)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 
