@@ -77,5 +77,6 @@ Visual inspection confirmed that while the model generally performs well, some a
 ![image](https://github.com/user-attachments/assets/58016800-8743-40a0-ae1f-9d56415627d2)
 ![image](https://github.com/user-attachments/assets/fd0e2dbf-531f-4270-b907-d03846c1e79c)
 
+Deployment Link: https://huggingface.co/spaces/mednow/image_enhancement
 
 
