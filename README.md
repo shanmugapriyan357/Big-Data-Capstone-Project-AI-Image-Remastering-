@@ -70,6 +70,8 @@ The model has been evaluated on a validation set using the following metrics:
 - **Average VGG Loss:** 0.0628
 
 Visual inspection confirmed that while the model generally performs well, some artifacts may appear on certain images, particularly those with human faces.
+## Deployment(Flask/Streamlit)
+Deployment Link: https://huggingface.co/spaces/mednow/image_enhancement
 ## Demo Screenshots
 ![image](https://github.com/user-attachments/assets/2a8aaea9-3bb3-4b11-9912-042cb52cce85)
 ![image](https://github.com/user-attachments/assets/d8e236cf-6988-49e2-86a4-bd13686af977)
@@ -77,6 +79,6 @@ Visual inspection confirmed that while the model generally performs well, some a
 ![image](https://github.com/user-attachments/assets/58016800-8743-40a0-ae1f-9d56415627d2)
 ![image](https://github.com/user-attachments/assets/fd0e2dbf-531f-4270-b907-d03846c1e79c)
 
-Deployment Link: https://huggingface.co/spaces/mednow/image_enhancement
+
 
 
